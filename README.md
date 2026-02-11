@@ -1,109 +1,84 @@
 # Stremio monorepo (Northflank)
 
-Repo-ul conține template-uri ⁠ .env.example ⁠ pentru:
-•⁠  ⁠AIOStreams
-•⁠  ⁠AIOMetadata (+ Redis)
-•⁠  ⁠EasyProxy
+Repo-ul conține template-uri ⁠ .env.example ⁠ și fișiere ⁠ docker-compose.yml ⁠ pentru rulare locală.
+Pe Northflank NU rulezi direct ⁠ docker-compose.yml ⁠; creezi câte 1 service per container și setezi Ports + Runtime variables din UI.
 
-Northflank: creezi câte 1 service per container (nu rulează direct docker-compose). Configurezi Ports (HTTP) + Runtime variables (ENV) din UI.
+## Naming (Northflank)
+Folosește nume simple ca să îți iasă frumos URL-ul public. Northflank generează domenii publice în format:
+⁠ [port-name]--[service-name]--[random-string].code.run ⁠ (TLS/HTTPS inclus).  
+Recomandare: ⁠ port name = http ⁠ la toate.
 
----
-
-## Regula pentru URL (Northflank)
-Când expui un port HTTP public, Northflank îți generează un domeniu în format:
-
-⁠ [port-name]--[service-name]--[random].code.run ⁠
-
-De aceea:
-•⁠  ⁠alege service name-uri simple (fără spații)
-•⁠  ⁠alege port name-uri scurte (ex. ⁠ http ⁠)
+### Service names
+•⁠  ⁠AIOStreams: ⁠ stremio-aiostreams ⁠
+•⁠  ⁠AIOMeta ⁠ stremio-aiometadata ⁠
+•⁠  ⁠Mediaflow-proxy: ⁠ stremio-mediaflow ⁠
+•⁠  ⁠(opțional) EasyProxy: ⁠ stremio-easyproxy ⁠
 
 ---
 
-## Servicii (recomandare nume)
+## 1) AIOStreams
 
-### 1) AIOStreams
-Service name: ⁠ aiostreams ⁠  
 Image: ⁠ ghcr.io/viren070/aiostreams:latest ⁠  
-Public port:
-•⁠  ⁠Port: ⁠ 11451 ⁠
-•⁠  ⁠Protocol: ⁠ HTTP ⁠
-•⁠  ⁠Port name: ⁠ http ⁠
-•⁠  ⁠Public: ⁠ true ⁠
+Port (internal): ⁠ 3000 ⁠ (HTTP, public, port name ⁠ http ⁠)  
 
-Env (Runtime variables):
+Runtime variables (obligatorii):
 •⁠  ⁠⁠ BASE_URL=https://REPLACE_WITH_NORTHFLANK_URL ⁠
-•⁠  ⁠⁠ SECRET_KEY=REPLACE_WITH_RANDOM ⁠
-•⁠  ⁠⁠ LOG_LEVEL=info ⁠ (optional)
+•⁠  ⁠⁠ SECRET_KEY=REPLACE_WITH_64_HEX ⁠ (generează cu ⁠ openssl rand -hex 32 ⁠)
 
-Storage (optional, recommended):
-•⁠  ⁠Mount volume at ⁠ /app/data ⁠
+Runtime variables (opționale):
+•⁠  ⁠⁠ LOG_LEVEL=info ⁠
+•⁠  ⁠⁠ ADDON_PASSWORD=... ⁠ (dacă vrei parolă la instalare/folosire)
 
-După deploy: pune URL-ul generat în ⁠ aiostreams/.env ⁠ la ⁠ BASE_URL ⁠.
+Storage (recomandat):
+•⁠  ⁠Volume mount: ⁠ /app/data ⁠
 
 ---
 
-### 2) AIOMetadata
-Service name: ⁠ aiometadata ⁠  
-Image: ⁠ ghcr.io/cedya77/aiometalatest ⁠  
-Public port:
-•⁠  ⁠Port: ⁠ 3232 ⁠
-•⁠  ⁠Protocol: ⁠ HTTP ⁠
-•⁠  ⁠Port name: ⁠ http ⁠
-•⁠  ⁠Public: ⁠ true ⁠
+## 2) AIOMetadata (+ Redis)
+
+AIOMetadata image: ⁠ ghcr.io/cedya77/aiometalatest ⁠  
+Port (internal): ⁠ 3232 ⁠ (HTTP, public, port name ⁠ http ⁠)  
 
 Redis:
-•⁠  ⁠Creează un Redis Addon în Northflank.
-•⁠  ⁠Setează ⁠ REDIS_URL ⁠ în service (din connection string / secret group alias).
+•⁠  ⁠Recomandat pe Northflank: Redis Addon (nu container redis manual).
 
-Env:
+Runtime variables:
 •⁠  ⁠⁠ HOST_NAME=https://REPLACE_WITH_NORTHFLANK_URL ⁠
-•⁠  ⁠⁠ REDIS_URL=REPLACE_FROM_REDIS_ADDON ⁠
+•⁠  ⁠⁠ REDIS_URL=REPLACE_FROM_REDIS_ADDON ⁠ (ex. ⁠ redis://:password@host:6379/0 ⁠)
 •⁠  ⁠⁠ DATABASE_URI=sqlite:///app/addon/data/aiometadata.db ⁠
 •⁠  ⁠⁠ TMDB_API_KEY=REPLACE_WITH_TMDB_KEY ⁠
 
-Storage (recommended):
-•⁠  ⁠Mount volume at ⁠ /app/addon/data ⁠
-
-După deploy: pune URL-ul generat în ⁠ aiometadata/.env ⁠ la ⁠ HOST_NAME ⁠.
+Storage (recomandat):
+•⁠  ⁠Volume mount: ⁠ /app/addon/data ⁠
 
 ---
 
-### 3) EasyProxy
-Service name: ⁠ easyproxy ⁠  
-Image: ⁠ justsml/easy-proxy:latest ⁠  
-Public port:
-•⁠  ⁠Port: ⁠ 5050 ⁠
-•⁠  ⁠Protocol: ⁠ HTTP ⁠
-•⁠  ⁠Port name: ⁠ http ⁠
-•⁠  ⁠Public: ⁠ true ⁠
+## 3) Mediaflow-proxy
 
-Env:
+Image: ⁠ mhdzumair/mediaflow-proxy:latest ⁠  
+Port (internal): ⁠ 8888 ⁠ (HTTP, public, port name ⁠ http ⁠)  
+
+Runtime variables:
+•⁠  ⁠⁠ API_PASSWORD=REPLACE_WITH_STRONG_PASSWORD ⁠
+
+---
+
+## 4) EasyProxy (opțional)
+
+Image: ⁠ justsml/easy-proxy:latest ⁠  
+Port (internal): ⁠ 5050 ⁠ (HTTP, public, port name ⁠ http ⁠)  
+
+Runtime variables:
 •⁠  ⁠⁠ PROXY_USERNAME=admin ⁠
-•⁠  ⁠⁠ PROXY_PASSWORD=Inter2010⁠
+•⁠  ⁠⁠ PROXY_PASSWORD=REPLACE_WITH_PASSWORD ⁠
 •⁠  ⁠⁠ PROXY_PORT=5050 ⁠
 •⁠  ⁠⁠ PROXY_HOST=REPLACE_WITH_PUBLIC_DOMAIN_OR_IP ⁠
 
 ---
 
-## Mediaflow-proxy
+## După deploy (foarte important)
+1) Copiezi URL-urile publice generate de Northflank și le pui în:
+•⁠  ⁠AIOStreams: ⁠ BASE_URL=https://... ⁠
+•⁠  ⁠AIOMeta ⁠ HOST_NAME=https://... ⁠
 
-### Image
-⁠ mhdzumair/mediaflow-proxy:latest ⁠
-
-### Northflank
-Create service → Deployment → Deploy a Docker image
-
-*Ports*
-•⁠  ⁠Port: ⁠ 8888 ⁠
-•⁠  ⁠Protocol: ⁠ HTTP ⁠
-•⁠  ⁠Public: ⁠ true ⁠
-•⁠  ⁠Port name: ⁠ http ⁠
-
-*Runtime variables*
-•⁠  ⁠⁠ API_PASSWORD=Inter2010⁠
-
-
-## Notițe
-•⁠  ⁠Public ports pe Northflank trebuie să fie HTTP/HTTP2 (nu TCP) ca să primești domeniu + TLS.
-•⁠  ⁠Nu include ⁠ :11451 ⁠ / ⁠ :3232 ⁠ / ⁠ :5050 ⁠ în URL-urile HTTPS publice; folosește doar ⁠ https://<domain> ⁠.
+2) Orice parolă / API key se pune în Northflank ca Runtime variables / Secrets, NU în repo.
