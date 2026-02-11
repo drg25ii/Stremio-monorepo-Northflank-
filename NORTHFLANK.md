@@ -17,3 +17,9 @@ Volume: mount /app/addon/data
 Image: justsml/easy-proxy:latest
 Port: 5050 (HTTP, public)
 Env: PROXY_USERNAME, PROXY_PASSWORD, PROXY_PORT, PROXY_HOST
+
+## Mediaflow-proxy
+
+Image: mhdzumair/mediaflow-proxy:latest  
+Port: 8888 (HTTP, public)  
+Env: API_PASSWORD (setat ca secret/runtime variable)
