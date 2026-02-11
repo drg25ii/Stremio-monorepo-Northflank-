@@ -23,11 +23,11 @@ Port (internal): ⁠ 3000 ⁠ (HTTP, public, port name ⁠ http ⁠)
 
 Runtime variables (obligatorii):
 •⁠  ⁠⁠ BASE_URL=https://REPLACE_WITH_NORTHFLANK_URL ⁠
-•⁠  ⁠⁠ SECRET_KEY=REPLACE_WITH_64_HEX ⁠ (generează cu ⁠ openssl rand -hex 32 ⁠)
+•⁠  ⁠⁠ SECRET_KEY=f5d8a2c1e9b4d3f7a6e2c8b0d4f1a3e5c7b9a2d0f4e6b8c1a3d5f7e9b0a2d4c6
 
 Runtime variables (opționale):
 •⁠  ⁠⁠ LOG_LEVEL=info ⁠
-•⁠  ⁠⁠ ADDON_PASSWORD=... ⁠ (dacă vrei parolă la instalare/folosire)
+•⁠  ⁠⁠ ADDON_PASSWORD=Inter2010
 
 Storage (recomandat):
 •⁠  ⁠Volume mount: ⁠ /app/data ⁠
@@ -46,7 +46,7 @@ Runtime variables:
 •⁠  ⁠⁠ HOST_NAME=https://REPLACE_WITH_NORTHFLANK_URL ⁠
 •⁠  ⁠⁠ REDIS_URL=REPLACE_FROM_REDIS_ADDON ⁠ (ex. ⁠ redis://:password@host:6379/0 ⁠)
 •⁠  ⁠⁠ DATABASE_URI=sqlite:///app/addon/data/aiometadata.db ⁠
-•⁠  ⁠⁠ TMDB_API_KEY=REPLACE_WITH_TMDB_KEY ⁠
+•⁠  ⁠⁠ TMDB_API_KEY=ef02c9f189ec138e0a1e2ce0aefc9442⁠
 
 Storage (recomandat):
 •⁠  ⁠Volume mount: ⁠ /app/addon/data ⁠
@@ -59,7 +59,7 @@ Image: ⁠ mhdzumair/mediaflow-proxy:latest ⁠
 Port (internal): ⁠ 8888 ⁠ (HTTP, public, port name ⁠ http ⁠)  
 
 Runtime variables:
-•⁠  ⁠⁠ API_PASSWORD=REPLACE_WITH_STRONG_PASSWORD ⁠
+•⁠  ⁠⁠ API_PASSWORD=Inter2010⁠
 
 ---
 
@@ -70,7 +70,7 @@ Port (internal): ⁠ 5050 ⁠ (HTTP, public, port name ⁠ http ⁠)
 
 Runtime variables:
 •⁠  ⁠⁠ PROXY_USERNAME=admin ⁠
-•⁠  ⁠⁠ PROXY_PASSWORD=REPLACE_WITH_PASSWORD ⁠
+•⁠  ⁠⁠ PROXY_PASSWORD=Inter2010
 •⁠  ⁠⁠ PROXY_PORT=5050 ⁠
 •⁠  ⁠⁠ PROXY_HOST=REPLACE_WITH_PUBLIC_DOMAIN_OR_IP ⁠
 
